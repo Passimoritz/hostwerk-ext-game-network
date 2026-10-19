@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Passimoritz/hostwerk-public/main/sdk/manifest.schema.json",
+  "id": "game-network",
+  "name": {
+    "de": "Spiele-Server-Verbund",
+    "en": "Game server network"
+  },
+  "description": {
+    "de": "Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in der richtigen Reihenfolge (erst die Server, dann der Proxy) – und auf einen Blick sehen, was läuft und wer spielt. Velocity-Netzwerke aus Hostwerks Minecraft-Bereich werden mit einem Klick übernommen.",
+    "en": "Game and Minecraft servers as one network: start and stop them together – in the right order (servers first, then the proxy) – and see at a glance what runs and who plays. Velocity networks from Hostwerk's Minecraft area are taken over with one click."
+  },
+  "version": "1.0.0",
+  "author": "Hostwerk",
+  "homepage": "https://github.com/Passimoritz/hostwerk-ext-game-network",
+  "license": "MIT",
+  "icon": "icon.svg",
+  "banner": "banner.svg",
+  "color": "#c2410c",
+  "category": "games",
+  "hostwerk": ">=2.9.0",
+  "requires": {
+    "game-servers": ">=1.0.0"
+  },
+  "permissions": [
+    "native"
+  ],
+  "page": {
+    "title": {
+      "de": "Spiele-Server-Verbund",
+      "en": "Game server network"
+    },
+    "description": {
+      "de": "Server gemeinsam starten und stoppen.",
+      "en": "Start and stop servers together."
+    },
+    "icon": "network"
+  },
+  "backend": "server/index.js",
+  "ui": "ui/index.js",
+  "screenshots": [
+    "docs/screenshot.png",
+    "docs/screenshot.de.png"
+  ]
+}
