@@ -163,11 +163,12 @@ test('tick announces in the chat of the running backends (not the proxy)', async
   assert.deepStrictEqual(h.said, ['lobby: say Geplanter Neustart des Verbunds in 5 Minuten.']);
 });
 
-test('Geyser on a backend but not on the proxy is pointed out; totals and member lookup', () => {
+test('totals and member lookup; Minecraft networks are pointed to mc-network', () => {
   const h = world();
   const n = new GameNetwork(h);
   const g = n.fromProxy('proxy');
-  assert.deepStrictEqual(n.view(n.get(g.id)).geyser, { proxy: 'proxy', proxyName: 'Velocity', backends: ['Lobby'] });
+  assert.strictEqual(n.view(n.get(g.id)).geyser, undefined, 'Bedrock lives in mc-network now');
+  assert.strictEqual(n.view(n.get(g.id)).mcNetwork, false);
   assert.deepStrictEqual(n.totals(), { networks: 1, servers: 3, running: 1, players: 3 });
   assert.strictEqual(n.forMember('mc', 'survival').length, 1);
   assert.strictEqual(n.forMember('game', 'vh-1').length, 0);

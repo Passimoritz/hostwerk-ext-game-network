@@ -6,10 +6,10 @@
     "en": "Game server network"
   },
   "description": {
-    "de": "Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in der richtigen Reihenfolge (erst die Server, dann der Proxy) – und auf einen Blick sehen, was läuft und wer spielt. Velocity-Netzwerke aus Hostwerks Minecraft-Bereich werden mit einem Klick übernommen.",
-    "en": "Game and Minecraft servers as one network: start and stop them together – in the right order (servers first, then the proxy) – and see at a glance what runs and who plays. Velocity networks from Hostwerk's Minecraft area are taken over with one click."
+    "de": "Spiele-Server, die zusammengehören, als Verbund: ein Cluster (ARK, Conan), mehrere Instanzen eines Spiels oder alles für den Spieleabend. Der Reihe nach starten mit Bereitschaftsprüfung, gemeinsamer Zeitplan (Neustart mit Ansage, Sicherungen), gleiches Passwort und gleiche Spielerplätze für alle, Ports mit Konflikten und Router-Freigaben auf einen Blick.",
+    "en": "Game servers that belong together as one network: a cluster (ARK, Conan), several instances of one game or everything for game night. Start in order with a readiness check, one schedule (restart with announcement, backups), the same password and player slots for all, ports with conflicts and router forwarding at a glance."
   },
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Hostwerk",
   "homepage": "https://github.com/Passimoritz/hostwerk-ext-game-network",
   "license": "MIT",
@@ -30,8 +30,8 @@
       "en": "Game server network"
     },
     "description": {
-      "de": "Server gemeinsam starten und stoppen.",
-      "en": "Start and stop servers together."
+      "de": "Spiele-Server gemeinsam starten, planen und einstellen.",
+      "en": "Start, schedule and set up game servers together."
     },
     "icon": "network",
     "nav": {
@@ -47,14 +47,21 @@
   ],
   "synergies": [
     {
-      "with": "bedrock-bridge",
+      "with": "mc-network",
       "title": {
-        "de": "Bedrock über den Proxy",
-        "en": "Bedrock through the proxy"
+        "de": "Minecraft-Netzwerke mit Proxy, Bedrock und Versionen",
+        "en": "Minecraft networks with proxy, Bedrock and versions"
       },
       "text": {
-        "de": "Geyser einmal am Velocity-Proxy statt auf jedem Server.",
-        "en": "Geyser once on the Velocity proxy instead of on every server."
+        "de": "Proxy-Netzwerke richtet „Minecraft-Servernetzwerk“ ein – hier startest du sie zusammen mit anderen Spiele-Servern.",
+        "en": "Proxy networks are set up in “Minecraft server network” – here you start them together with other game servers."
+      }
+    },
+    {
+      "with": "router",
+      "title": {
+        "de": "Alle Ports des Verbunds mit einem Klick im Router freigeben",
+        "en": "Forward every port of the network in the router with one click"
       }
     }
   ],

@@ -7,12 +7,16 @@
  *
  * Starting waits until each server is really ready (Minecraft: "Done", game servers: answer to the Steam query) before
  * the next one starts; the pause comes on top. If a backend fails, the proxy is not started (unless asked to anyway).
- * A scheduled restart announces itself in the chat beforehand.
+ * A scheduled restart announces itself in the chat beforehand; a scheduled backup saves every server of the network.
  *
- * Data: settings.gameNetwork.groups = [{ id, name, members: [{ kind: 'game' | 'mc', id }], delay, restart: { enabled, at, warn } }]
+ * 1.2: shared settings (server password, player slots) for every game server of the network, a port overview with
+ * conflicts against everything else on this PC, router forwardings for the whole network in one go ("Router & port
+ * forwarding" ≥ 1.2, owner game-network), players per server and in total. Minecraft networks with a proxy, Bedrock and
+ * version bridges live in the extension "Minecraft server network" (mc-network) – here a Minecraft server is just a member.
+ *
+ * Data: settings.gameNetwork.groups = [{ id, name, members: [{ kind: 'game' | 'mc', id }] (order = start order), delay,
+ *   restart: { enabled, at, warn }, backup: { enabled, at }, shared: { password, maxPlayers } }]
  */
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -25,6 +29,16 @@ const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDa
  * lief nicht) wird nur innerhalb von 5 Minuten nachgeholt – kein Neustart mitten am Tag.
  */
 function due(g, now, fired) {
+  const out = dueRestart(g, now, fired);
+  if (out) return out;
+  const b = g.backup;
+  if (!b || !b.enabled || !/^\d{2}:\d{2}$/.test(b.at || '')) return null;
+  const d = new Date(now);
+  const [h, m] = b.at.split(':').map(Number);
+  const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m).getTime();
+  return now >= at && now - at < 5 * 60000 && !fired.has(`${g.id}:${dayKey(d)}:backup`) ? 'backup' : null;
+}
+function dueRestart(g, now, fired) {
   const r = g.restart;
   if (!r || !r.enabled || !/^\d{2}:\d{2}$/.test(r.at || '')) return null;
   const d = new Date(now);
@@ -57,6 +71,7 @@ class GameNetwork {
       const what = due(g, now, this.fired);
       if (!what) continue;
       this.fired.add(`${g.id}:${dayKey(new Date(now))}:${what}`);
+      if (what === 'backup') { this.backupAll(g.id).promise.catch(() => {}); continue; }
       if (what === 'warn') await this.announce(g, this.T('Scheduled restart of the network in {n} minutes.', { n: g.restart.warn }));
       else if (this.view(g).running > 0) { await this.announce(g, this.T('The network restarts now – back in a moment.')); this.run(g.id, 'restart').promise.catch(() => {}); }
     }
@@ -135,7 +150,9 @@ class GameNetwork {
     const delay = Math.max(0, Math.min(120, Number(b.delay) || 0));
     const r = b.restart && typeof b.restart === 'object' ? b.restart : {};
     const restart = { enabled: !!r.enabled, at: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(r.at || '')) ? r.at : '05:00', warn: Math.max(0, Math.min(30, Math.round(Number(r.warn ?? 5)) || 0)) };
-    return { name, members, delay, restart };
+    const bk = b.backup && typeof b.backup === 'object' ? b.backup : {};
+    const backup = { enabled: !!bk.enabled, at: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(bk.at || '')) ? bk.at : '04:30' };
+    return { name, members, delay, restart, backup };
   }
   create(b) {
     const g = { id: crypto.randomBytes(4).toString('hex'), ...this.clean(b || {}), createdAt: Date.now() };
@@ -159,17 +176,136 @@ class GameNetwork {
   view(g) {
     const members = g.members.map((m) => this.member(m));
     const running = members.filter((m) => m.running).length;
-    return { ...g, restart: g.restart || { enabled: false, at: '05:00', warn: 5 }, members, running, total: members.length, players: members.reduce((n, m) => n + (m.players || 0), 0), state: running === 0 ? 'stopped' : running === members.length ? 'running' : 'partial', geyser: this.geyser(g) };
+    const { shared, ...pub } = g;
+    return { ...pub, shared: { maxPlayers: (shared && shared.maxPlayers) || null, password: !!(shared && shared.password) }, restart: g.restart || { enabled: false, at: '05:00', warn: 5 }, backup: g.backup || { enabled: false, at: '04:30' }, members, running, total: members.length, players: members.reduce((n, m) => n + (m.players || 0), 0), state: running === 0 ? 'stopped' : running === members.length ? 'running' : 'partial', mcNetwork: !!this.ctx.mcNetworkInstalled || this.hasMcNetwork() };
   }
-  /** Geyser liegt auf Backends, aber nicht am Proxy? Dann besser einmal am Proxy statt auf jedem Server (Bedrock-Spieler kommen über den Proxy). */
-  geyser(g) {
-    const mc = this.ctx.minecraft; if (!mc || typeof mc.dir !== 'function') return null;
-    const has = (id) => { try { return fs.readdirSync(path.join(mc.dir(id), 'plugins')).some((f) => /^geyser.*\.jar$/i.test(f)); } catch { return false; } };
-    const members = g.members.map((m) => this.member(m)).filter((m) => m.kind === 'mc' && !m.missing);
-    const proxy = members.find((m) => m.proxy);
-    if (!proxy) return null;
-    const backends = members.filter((m) => !m.proxy && has(m.id)).map((m) => m.name);
-    return backends.length && !has(proxy.id) ? { proxy: proxy.id, proxyName: proxy.name, backends } : null;
+  /** Is the extension "Minecraft server network" there? (then Minecraft proxies, Bedrock and versions are managed there) */
+  hasMcNetwork() { try { return !!(this.ctx.extMarket && this.ctx.extMarket.list().some((e) => e.id === 'mc-network' && !e.error)); } catch { return false; } }
+
+  /* ---------- 1.2: players, ports, router, shared settings, backups ---------- */
+
+  /** Players per member right now – game servers through the Steam query (A2S), Minecraft from the console. */
+  async live(id) {
+    const g = this.get(id);
+    const out = [];
+    for (const m of g.members.map((x) => this.member(x))) {
+      let players = 0; let max = null;
+      if (m.kind === 'mc') players = m.players || 0;
+      else if (m.running && this.ctx.games && typeof this.ctx.games.live === 'function') {
+        try { const s = this.ctx.games.get(m.id); const v = await Promise.race([this.ctx.games.live(s), sleep(2500).then(() => null)]); if (v) { players = Number(v.players) || 0; max = v.maxPlayers || null; } } catch { /* no answer */ }
+      }
+      out.push({ kind: m.kind, id: m.id, name: m.name, running: !!m.running, players, max });
+    }
+    return { members: out, players: out.reduce((n, x) => n + x.players, 0) };
+  }
+
+  /** Ports of one member: [{ port, proto, name }] */
+  portsOfMember(m) {
+    if (m.kind === 'mc') {
+      const mc = this.ctx.minecraft; let s; try { s = mc.get(m.id); } catch { return []; }
+      // Behind a proxy a server listens on 127.0.0.1 only – not a port anybody connects to
+      const out = s.network && s.network.proxy ? [] : [{ port: s.port, proto: 'TCP', name: 'Minecraft' }];
+      if (s.geyser && s.geyser.port) out.push({ port: s.geyser.port, proto: 'UDP', name: 'Bedrock (Geyser)' });
+      return out;
+    }
+    if (!this.ctx.games) return [];
+    let s; try { s = this.ctx.games.get(m.id); } catch { return []; }
+    const out = [];
+    for (const p of (typeof this.ctx.games.portsOf === 'function' ? this.ctx.games.portsOf(s) : []) || []) {
+      const port = Number(p.port); if (!Number.isInteger(port) || port < 1 || port > 65535) continue;
+      const proto = String(p.proto || '').toLowerCase();
+      for (const pr of /udp/.test(proto) && /tcp/.test(proto) ? ['TCP', 'UDP'] : [/udp/.test(proto) ? 'UDP' : 'TCP']) out.push({ port, proto: pr, name: p.name || 'Game' });
+    }
+    return out;
+  }
+  /** Every port the network uses – with conflicts against every other game or Minecraft server on this PC. */
+  ports(id) {
+    const g = this.get(id);
+    const all = this.candidates().map((c) => ({ ...c, ports: this.portsOfMember(c) }));
+    const owners = new Map();
+    for (const c of all) for (const p of c.ports) { const k = `${p.port}/${p.proto}`; owners.set(k, [...(owners.get(k) || []), c]); }
+    const forwarded = new Set(this.owned().map((x) => `${x.port}/${x.protocol}`));
+    const rows = [];
+    for (const m of g.members.map((x) => this.member(x))) {
+      for (const p of this.portsOfMember(m)) {
+        const k = `${p.port}/${p.proto}`;
+        const others = (owners.get(k) || []).filter((c) => !(c.kind === m.kind && c.id === m.id)).map((c) => c.name);
+        rows.push({ member: m.name, kind: m.kind, id: m.id, port: p.port, proto: p.proto, name: p.name, conflict: others, forwarded: forwarded.has(k) });
+      }
+    }
+    return { ports: rows, conflicts: rows.filter((r) => r.conflict.length).length, router: this.routerState() };
+  }
+  routerState() { const r = this.ctx.router; return { available: !!(r && r.forwards && typeof r.forwards.add === 'function'), auto: !!(r && r.cfg && r.cfg.auto) }; }
+  owned() { try { return this.ctx.router && this.ctx.router.forwards ? this.ctx.router.forwards.owned('game-network') : []; } catch { return []; } }
+  /** Forward (or remove) every port of the network in the router in one go – owner "game-network", so nothing else is touched. */
+  async forward(id, on = true) {
+    const r = this.ctx.router;
+    if (!r || !r.forwards || typeof r.forwards.add !== 'function') throw Object.assign(new Error(this.T('Needs the extension “Router & port forwarding” (1.2 or newer).')), { status: 409 });
+    const { ports } = this.ports(id);
+    const out = [];
+    for (const p of ports) {
+      if (on && p.conflict.length) { out.push({ ...p, ok: false, why: this.T('port also used by {list}', { list: p.conflict.join(', ') }) }); continue; }
+      try {
+        if (on) await r.forwards.add({ port: p.port, protocol: p.proto, label: `${this.get(id).name}: ${p.member}` }, 'game-network');
+        else await r.forwards.remove({ port: p.port, protocol: p.proto }, 'game-network');
+        out.push({ ...p, ok: true });
+      } catch (e) { out.push({ ...p, ok: false, why: e.message }); }
+    }
+    return { results: out, ...this.ports(id) };
+  }
+
+  /**
+   * Same server password and player slots for every game server of the network (Steam servers: Hostwerk's settings,
+   * LinuxGSM: serverpassword/maxplayers in its config; Minecraft: max-players). Applies at the next start of each server.
+   */
+  applyShared(id, b = {}) {
+    const g = this.get(id);
+    const T = this.T;
+    const password = b.password === undefined ? undefined : String(b.password);
+    const maxPlayers = b.maxPlayers === undefined || b.maxPlayers === '' || b.maxPlayers === null ? undefined : Math.round(Number(b.maxPlayers));
+    if (maxPlayers !== undefined && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > 1000)) throw Object.assign(new Error(T('Player slots are a number between 1 and 1000.')), { status: 400 });
+    if (password !== undefined && (/[\s"'`$\\]/.test(password) || password.length > 40)) throw Object.assign(new Error(T('The password may not contain spaces, quotes, $ or \\ (at most 40 characters).')), { status: 400 });
+    g.shared = { ...(g.shared || {}), ...(password !== undefined ? { password } : {}), ...(maxPlayers !== undefined ? { maxPlayers } : {}) };
+    this.ctx.settings.save();
+    return this.host.core('jobs').runJob(T('Shared settings for “{name}”', { name: g.name }), async (job) => {
+      const results = [];
+      for (const m of g.members.map((x) => this.member(x)).filter((x) => !x.missing)) {
+        try {
+          if (m.kind === 'mc') {
+            if (maxPlayers !== undefined && typeof this.ctx.minecraft.setProperties === 'function' && !m.proxy) this.ctx.minecraft.setProperties(m.id, { 'max-players': String(maxPlayers) });
+            results.push({ name: m.name, ok: true, note: password !== undefined ? T('Minecraft has no server password – use the whitelist') : null });
+          } else {
+            const games = this.ctx.games; const s = games.get(m.id);
+            if (s.kind === 'steam') games.steamSet(s, { ...(password !== undefined ? { password } : {}), ...(maxPlayers !== undefined ? { maxPlayers } : {}) });
+            else await games.quickSet(s, { ...(password !== undefined ? { serverpassword: password } : {}), ...(maxPlayers !== undefined ? { maxplayers: String(maxPlayers) } : {}) });
+            results.push({ name: m.name, ok: true, restart: !!m.running });
+          }
+          job.log(`✓ ${m.name}`);
+        } catch (e) { results.push({ name: m.name, ok: false, why: e.message }); job.log(`✗ ${m.name}: ${e.message}`); }
+      }
+      return { results, text: T('{n} servers updated – applies at their next start', { n: results.filter((x) => x.ok).length }) };
+    }, { key: `game-network-shared-${id}` });
+  }
+
+  /** Back up every server of the network (game servers: their backup command, Minecraft: Hostwerk's backup). */
+  backupAll(id) {
+    const g = this.get(id);
+    const T = this.T;
+    return this.host.core('jobs').runJob(T('Back up network “{name}”', { name: g.name }), async (job) => {
+      const failed = [];
+      const list = g.members.map((x) => this.member(x)).filter((x) => !x.missing && !x.proxy);
+      let i = 0;
+      for (const m of list) {
+        job.progress(Math.round((i++ / Math.max(1, list.length)) * 100), T('Backing up {name} …', { name: m.name }));
+        try {
+          if (m.kind === 'mc') await this.ctx.minecraft.backup(m.id, g.name).promise;
+          else await this.ctx.games.run(m.id, 'backup').promise;
+          job.log(`✓ ${m.name}`);
+        } catch (e) { failed.push(m.name); job.log(`✗ ${m.name}: ${e.message}`); }
+      }
+      if (failed.length) throw new Error(T('Not everything worked: {list}', { list: failed.join(', ') }));
+      return { ok: true, text: T('{n} servers backed up', { n: list.length }) };
+    }, { key: `game-network-backup-${id}` });
   }
   /** Summen über alle Verbünde (Kachel der Übersicht). */
   totals() {
@@ -235,6 +371,11 @@ class GameNetwork {
     r.post('/game-network/from-proxy/:proxy', (req, res) => res.json(this.fromProxy(req.params.proxy)));
     r.put('/game-network/:id', (req, res) => res.json(this.update(req.params.id, req.body || {})));
     r.delete('/game-network/:id', (req, res) => { this.remove(req.params.id); res.json({ ok: true }); });
+    r.get('/game-network/:id/live', async (req, res) => res.json(await this.live(req.params.id)));
+    r.get('/game-network/:id/ports', (req, res) => res.json(this.ports(req.params.id)));
+    r.post('/game-network/:id/forward', async (req, res) => res.json(await this.forward(req.params.id, (req.body || {}).on !== false)));
+    r.put('/game-network/:id/shared', (req, res) => res.json({ job: this.applyShared(req.params.id, req.body || {}).id }));
+    r.post('/game-network/:id/backup', (req, res) => res.json({ job: this.backupAll(req.params.id).id }));
     r.post('/game-network/:id/:action', (req, res) => res.json({ job: this.run(req.params.id, req.params.action, { force: !!(req.body || {}).force }).id }));
   }
 }

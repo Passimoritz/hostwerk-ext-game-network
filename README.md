@@ -2,7 +2,7 @@
 
 # Game server network
 
-Game and Minecraft servers as one network: start and stop them together – in the right order – and see at a glance what runs and who plays.
+Game servers that belong together as one network: start them in order, one schedule, the same settings, ports and players at a glance.
 
 [Deutsch](README.de.md) · An official [Hostwerk](https://github.com/Passimoritz/hostwerk-public) extension (SDK 2.7, native extension)
 
@@ -10,17 +10,15 @@ Game and Minecraft servers as one network: start and stop them together – in t
 
 ## What it does
 
-- Groups of game servers and Minecraft servers
-- Start: every backend first, the proxy (Velocity) last – Hostwerk waits until each server is **really ready** (Minecraft: “Done”, game servers: answer to the server query), an extra pause on top if you like
-- If a server fails, the proxy stays off – with the question “Start anyway”
-- **Scheduled restart** every day at a set time, announced in the chat a few minutes before
-- **Geyser hint:** if Geyser runs on the servers but not on the proxy, the page suggests the proxy
-- **Dashboard tile** with all players in all networks
-- The page of every Minecraft server (the proxy too) shows which network it belongs to
-- Stop: the proxy first, so nobody lands on a server that is going down
-- Velocity networks from Hostwerk’s Minecraft area are found and taken over with one click
-- Players and state of the whole network on one card, right-click menus
-- Other extensions may add tabs (`allowExtensions`)
+- **Networks of game servers** that belong together – a cluster (ARK, Conan Exiles), several instances of one game, everything for game night. Single Minecraft servers can be part of it too.
+- **Start in order** (you choose it; a proxy always last) – Hostwerk waits until each server is **really ready** (game servers: answer to the server query, Minecraft: “Done”), an extra pause on top if you like. Stop the other way round. If a server fails, a proxy stays off – with the question “Start anyway”.
+- **Schedule:** restart every day with an announcement in the chat, **backup** of every server every day (game servers: their backup command, Minecraft: Hostwerk’s backup) – or “Back up all” by hand
+- **Shared settings:** the same server password and player slots for every game server (Steam servers in Hostwerk’s settings, LinuxGSM servers in their config)
+- **Ports at a glance** with conflicts against every other game or Minecraft server on this PC – and **router forwarding for the whole network** in one go (needs “Router & port forwarding” 1.2+, its own entries only)
+- **Players** per server (A2S) and in total, **dashboard tile** with all players in all networks
+- The page of every Minecraft server shows which network it belongs to; right-click menus; other extensions may add tabs
+
+Minecraft networks with a proxy (Velocity/BungeeCord), Bedrock players and version bridges are set up in the extension **[Minecraft server network](https://github.com/Passimoritz/hostwerk-ext-mc-network)** – here they are started together with other game servers.
 
 ## Install
 

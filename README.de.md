@@ -2,7 +2,7 @@
 
 # Spiele-Server-Verbund
 
-Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in der richtigen Reihenfolge – und auf einen Blick sehen, was läuft und wer spielt.
+Spiele-Server, die zusammengehören, als Verbund: der Reihe nach starten, ein Zeitplan, dieselben Einstellungen, Ports und Spieler auf einen Blick.
 
 [English](README.md) · Offizielle [Hostwerk](https://github.com/Passimoritz/hostwerk-public)-Erweiterung (SDK 2.7, native Erweiterung)
 
@@ -10,17 +10,15 @@ Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in d
 
 ## Was sie kann
 
-- Gruppen aus Spiele-Servern und Minecraft-Servern
-- Starten: erst alle Server, zuletzt der Proxy (Velocity) – Hostwerk wartet jeweils, bis ein Server **wirklich bereit** ist (Minecraft: „Done“, Spiele-Server: Antwort auf die Server-Abfrage), eine Pause kommt auf Wunsch obendrauf
-- Fällt ein Server aus, bleibt der Proxy aus – mit Rückfrage „Trotzdem starten“
-- **Geplanter Neustart** jeden Tag zu einer Uhrzeit, mit Ansage im Chat ein paar Minuten vorher
-- **Geyser-Hinweis:** Läuft Geyser auf den Servern, aber nicht am Proxy, schlägt die Seite den Proxy vor
-- **Kachel** mit allen Spielern in allen Verbünden für die Übersicht
-- Auf der Seite jedes Minecraft-Servers (auch des Proxys) steht, zu welchem Verbund er gehört
-- Stoppen: zuerst der Proxy, damit niemand auf einem Server landet, der gerade herunterfährt
-- Velocity-Netzwerke aus Hostwerks Minecraft-Bereich werden erkannt und mit einem Klick übernommen
-- Spieler und Zustand des ganzen Verbunds auf einer Karte, Rechtsklick-Menüs
-- Andere Erweiterungen dürfen Reiter ergänzen (`allowExtensions`)
+- **Verbünde aus Spiele-Servern**, die zusammengehören – ein Cluster (ARK, Conan Exiles), mehrere Instanzen eines Spiels, alles für den Spieleabend. Einzelne Minecraft-Server können dazugehören.
+- **Der Reihe nach starten** (du legst sie fest; ein Proxy immer zuletzt) – Hostwerk wartet, bis jeder Server **wirklich bereit** ist (Spiele-Server: Antwort auf die Server-Abfrage, Minecraft: „Done“), auf Wunsch mit Pause obendrauf. Stoppen umgekehrt. Fällt ein Server aus, bleibt ein Proxy aus – mit der Frage „Trotzdem starten“.
+- **Zeitplan:** jeden Tag neu starten mit Ansage im Chat, jeden Tag **sichern** (Spiele-Server: ihr Backup-Befehl, Minecraft: Hostwerks Sicherung) – oder „Alle sichern“ von Hand
+- **Gemeinsame Einstellungen:** dasselbe Server-Passwort und dieselben Spielerplätze für jeden Spiele-Server (Steam-Server in Hostwerks Einstellungen, LinuxGSM-Server in ihrer Konfiguration)
+- **Ports auf einen Blick** mit Konflikten gegen alle anderen Spiele- und Minecraft-Server auf diesem PC – und **Router-Freigaben für den ganzen Verbund** auf einmal (braucht „Router & Portfreigaben“ 1.2+, nur eigene Einträge)
+- **Spieler** je Server (A2S) und gesamt, **Kachel** in der Übersicht mit allen Spielern aller Verbünde
+- Die Seite jedes Minecraft-Servers zeigt, zu welchem Verbund er gehört; Rechtsklick-Menüs; andere Erweiterungen dürfen Reiter ergänzen
+
+Minecraft-Netzwerke mit Proxy (Velocity/BungeeCord), Bedrock-Spielern und Versions-Brücken richtest du in der Erweiterung **[Minecraft-Servernetzwerk](https://github.com/Passimoritz/hostwerk-ext-mc-network)** ein – hier startest du sie zusammen mit anderen Spiele-Servern.
 
 ## Installieren
 
