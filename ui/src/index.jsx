@@ -313,6 +313,10 @@ function MemberCard({ s }) {
 export default {
   pages: { main: NetworkPage },
   slots: {
+    // Seit Hostwerk 3.0 (SDK 3.2) ohne eigenen Seitenleisten-Eintrag ("nav": false) – die ganze Seite als Reiter im passenden Bereich;
+    // Hostwerk blendet dabei ihren Titel aus (Reiter + Herkunftszeile sagen schon, was es ist), die Knöpfe bleiben
+    // Reiter auf der Seite „Spiele-Server“ (Steckplatz games.tabs)
+    'games.tabs': [{ id: 'network', title: 'Network', icon: Network, Component: NetworkPage, order: 40 }],
     'dashboard.tiles': [{ id: 'players', title: 'Network players', icon: Users, size: 'third', Component: PlayersTile }],
     'mc.connect': [{ id: 'network', title: 'Network', Component: MemberCard, order: 70 }],
   },

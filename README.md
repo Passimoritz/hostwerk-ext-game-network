@@ -10,6 +10,7 @@ Game servers that belong together as one network: start them in order, one sched
 
 ## What it does
 
+- **Where:** Game servers → Network, the network card of every Minecraft server and the dashboard tile – no own sidebar entry since 1.3.0; the full page stays under Extensions → Open
 - **Networks of game servers** that belong together – a cluster (ARK, Conan Exiles), several instances of one game, everything for game night. Single Minecraft servers can be part of it too.
 - **Start in order** (you choose it; a proxy always last) – Hostwerk waits until each server is **really ready** (game servers: answer to the server query, Minecraft: “Done”), an extra pause on top if you like. Stop the other way round. If a server fails, a proxy stays off – with the question “Start anyway”.
 - **Schedule:** restart every day with an announcement in the chat, **backup** of every server every day (game servers: their backup command, Minecraft: Hostwerk’s backup) – or “Back up all” by hand

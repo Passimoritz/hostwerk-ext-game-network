@@ -10,6 +10,7 @@ Spiele-Server, die zusammengehören, als Verbund: der Reihe nach starten, ein Ze
 
 ## Was sie kann
 
+- **Wo:** Spiele-Server → Verbund, Verbund-Karte jedes Minecraft-Servers und Übersichtskachel – seit 1.3.0 ohne eigenen Seitenleisten-Eintrag; die ganze Seite bleibt unter Erweiterungen → Öffnen
 - **Verbünde aus Spiele-Servern**, die zusammengehören – ein Cluster (ARK, Conan Exiles), mehrere Instanzen eines Spiels, alles für den Spieleabend. Einzelne Minecraft-Server können dazugehören.
 - **Der Reihe nach starten** (du legst sie fest; ein Proxy immer zuletzt) – Hostwerk wartet, bis jeder Server **wirklich bereit** ist (Spiele-Server: Antwort auf die Server-Abfrage, Minecraft: „Done“), auf Wunsch mit Pause obendrauf. Stoppen umgekehrt. Fällt ein Server aus, bleibt ein Proxy aus – mit der Frage „Trotzdem starten“.
 - **Zeitplan:** jeden Tag neu starten mit Ansage im Chat, jeden Tag **sichern** (Spiele-Server: ihr Backup-Befehl, Minecraft: Hostwerks Sicherung) – oder „Alle sichern“ von Hand

@@ -1,3 +1,8 @@
+## 1.3.0
+
+- Lives where it belongs: Game servers → Network, the network card of every Minecraft server and the dashboard tile – no own sidebar entry any more (Hostwerk 3.0+); the full page stays under Extensions → Open and can be pinned in the sidebar settings. / Steckt jetzt dort, wo sie hingehört: Spiele-Server → Verbund, Verbund-Karte jedes Minecraft-Servers und Übersichtskachel – kein eigener Seitenleisten-Eintrag mehr (Hostwerk 3.0+); die ganze Seite bleibt unter Erweiterungen → Öffnen und lässt sich in den Seitenleisten-Einstellungen anheften.
+- The tab needs “Game servers” 1.8 or newer; without it the network stays reachable from Extensions → Open and every Minecraft server. / Der Reiter braucht „Spiele-Server“ 1.8 oder neuer; ohne sie bleibt der Verbund über Erweiterungen → Öffnen und jeden Minecraft-Server erreichbar.
+
 ## 1.2.0
 
 - New page: one network at a time with tabs Overview, Schedule, Shared settings and Ports – calmer than the card wall. / Neue Seite: ein Verbund auf einmal mit den Reitern Übersicht, Zeitplan, Gemeinsame Einstellungen und Ports – ruhiger als die Kartenwand.

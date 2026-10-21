@@ -9,7 +9,7 @@
     "de": "Spiele-Server, die zusammengehören, als Verbund: ein Cluster (ARK, Conan), mehrere Instanzen eines Spiels oder alles für den Spieleabend. Der Reihe nach starten mit Bereitschaftsprüfung, gemeinsamer Zeitplan (Neustart mit Ansage, Sicherungen), gleiches Passwort und gleiche Spielerplätze für alle, Ports mit Konflikten und Router-Freigaben auf einen Blick.",
     "en": "Game servers that belong together as one network: a cluster (ARK, Conan), several instances of one game or everything for game night. Start in order with a readiness check, one schedule (restart with announcement, backups), the same password and player slots for all, ports with conflicts and router forwarding at a glance."
   },
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Hostwerk",
   "homepage": "https://github.com/Passimoritz/hostwerk-ext-game-network",
   "license": "MIT",
@@ -34,10 +34,7 @@
       "en": "Start, schedule and set up game servers together."
     },
     "icon": "network",
-    "nav": {
-      "group": "server",
-      "after": "mc"
-    }
+    "nav": false
   },
   "backend": "server/index.js",
   "ui": "ui/index.js",
