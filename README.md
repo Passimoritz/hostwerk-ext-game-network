@@ -11,10 +11,16 @@ Game and Minecraft servers as one network: start and stop them together – in t
 ## What it does
 
 - Groups of game servers and Minecraft servers
-- Start: every backend first, the proxy (Velocity) last, with a pause in between
+- Start: every backend first, the proxy (Velocity) last – Hostwerk waits until each server is **really ready** (Minecraft: “Done”, game servers: answer to the server query), an extra pause on top if you like
+- If a server fails, the proxy stays off – with the question “Start anyway”
+- **Scheduled restart** every day at a set time, announced in the chat a few minutes before
+- **Geyser hint:** if Geyser runs on the servers but not on the proxy, the page suggests the proxy
+- **Dashboard tile** with all players in all networks
+- The page of every Minecraft server (the proxy too) shows which network it belongs to
 - Stop: the proxy first, so nobody lands on a server that is going down
 - Velocity networks from Hostwerk’s Minecraft area are found and taken over with one click
 - Players and state of the whole network on one card, right-click menus
+- Other extensions may add tabs (`allowExtensions`)
 
 ## Install
 

@@ -9,7 +9,7 @@
     "de": "Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in der richtigen Reihenfolge (erst die Server, dann der Proxy) – und auf einen Blick sehen, was läuft und wer spielt. Velocity-Netzwerke aus Hostwerks Minecraft-Bereich werden mit einem Klick übernommen.",
     "en": "Game and Minecraft servers as one network: start and stop them together – in the right order (servers first, then the proxy) – and see at a glance what runs and who plays. Velocity networks from Hostwerk's Minecraft area are taken over with one click."
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Hostwerk",
   "homepage": "https://github.com/Passimoritz/hostwerk-ext-game-network",
   "license": "MIT",
@@ -33,12 +33,34 @@
       "de": "Server gemeinsam starten und stoppen.",
       "en": "Start and stop servers together."
     },
-    "icon": "network"
+    "icon": "network",
+    "nav": {
+      "group": "server",
+      "after": "mc"
+    }
   },
   "backend": "server/index.js",
   "ui": "ui/index.js",
   "screenshots": [
     "docs/screenshot.png",
     "docs/screenshot.de.png"
-  ]
+  ],
+  "synergies": [
+    {
+      "with": "bedrock-bridge",
+      "title": {
+        "de": "Bedrock über den Proxy",
+        "en": "Bedrock through the proxy"
+      },
+      "text": {
+        "de": "Geyser einmal am Velocity-Proxy statt auf jedem Server.",
+        "en": "Geyser once on the Velocity proxy instead of on every server."
+      }
+    }
+  ],
+  "allowExtensions": {
+    "*": [
+      "tabs"
+    ]
+  }
 }

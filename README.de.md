@@ -11,10 +11,16 @@ Spiele- und Minecraft-Server als Verbund: gemeinsam starten und stoppen – in d
 ## Was sie kann
 
 - Gruppen aus Spiele-Servern und Minecraft-Servern
-- Starten: erst alle Server, zuletzt der Proxy (Velocity), mit Pause dazwischen
+- Starten: erst alle Server, zuletzt der Proxy (Velocity) – Hostwerk wartet jeweils, bis ein Server **wirklich bereit** ist (Minecraft: „Done“, Spiele-Server: Antwort auf die Server-Abfrage), eine Pause kommt auf Wunsch obendrauf
+- Fällt ein Server aus, bleibt der Proxy aus – mit Rückfrage „Trotzdem starten“
+- **Geplanter Neustart** jeden Tag zu einer Uhrzeit, mit Ansage im Chat ein paar Minuten vorher
+- **Geyser-Hinweis:** Läuft Geyser auf den Servern, aber nicht am Proxy, schlägt die Seite den Proxy vor
+- **Kachel** mit allen Spielern in allen Verbünden für die Übersicht
+- Auf der Seite jedes Minecraft-Servers (auch des Proxys) steht, zu welchem Verbund er gehört
 - Stoppen: zuerst der Proxy, damit niemand auf einem Server landet, der gerade herunterfährt
 - Velocity-Netzwerke aus Hostwerks Minecraft-Bereich werden erkannt und mit einem Klick übernommen
 - Spieler und Zustand des ganzen Verbunds auf einer Karte, Rechtsklick-Menüs
+- Andere Erweiterungen dürfen Reiter ergänzen (`allowExtensions`)
 
 ## Installieren
 
