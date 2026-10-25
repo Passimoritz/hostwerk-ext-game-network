@@ -2,6 +2,8 @@
 
 # Game server network
 
+> **Merged into “Game servers” (2.0):** the network is now the tab “Network” on the game servers page. Hostwerk installs the new version by itself and removes this extension; the networks stay. There are no new versions here.
+
 Game servers that belong together as one network: start them in order, one schedule, the same settings, ports and players at a glance.
 
 [Deutsch](README.de.md) · An official [Hostwerk](https://github.com/Passimoritz/hostwerk-public) extension (native extension, Hostwerk 2.9 or newer)

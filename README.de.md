@@ -2,6 +2,8 @@
 
 # Spiele-Server-Verbund
 
+> **Aufgegangen in „Spiele-Server“ (2.0):** Der Verbund ist jetzt der Reiter „Verbund“ auf der Seite der Spiele-Server. Hostwerk installiert die neue Fassung von selbst und entfernt diese Erweiterung; die Verbünde bleiben. Hier gibt es keine neuen Fassungen mehr.
+
 Spiele-Server, die zusammengehören, als Verbund: der Reihe nach starten, ein Zeitplan, dieselben Einstellungen, Ports und Spieler auf einen Blick.
 
 [English](README.md) · Offizielle [Hostwerk](https://github.com/Passimoritz/hostwerk-public)-Erweiterung (native Erweiterung, ab Hostwerk 2.9)
